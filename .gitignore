@@ -1,0 +1,70 @@
+# --- Python basics ---
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# --- Jupyter / Notebooks ---
+.ipynb_checkpoints/
+*.ipynb
+
+# --- Conda / venv ---
+.env
+.venv/
+venv/
+*.conda
+*.yaml
+*.yml
+
+# --- Project secrets ---
+.env              # API keys, tokens
+*.secret
+*.key
+*.pem
+
+# --- Data artifacts ---
+data/
+resources/scitldr_jsonl/
+*.parquet
+*.csv
+*.tsv
+*.jsonl
+*.db
+*.sqlite
+*.log
+*.tmp
+
+# --- Model artifacts ---
+checkpoints/
+runs/
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+
+# --- Hugging Face / Transformers cache ---
+.cache/
+huggingface/
+transformers_cache/
+datasets/
+*.arrow
+
+# --- Docker ---
+*.pid
+*.log
+*.sock
+
+# --- OS-specific noise ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
