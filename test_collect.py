@@ -63,8 +63,8 @@ def parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument("--cutoff", type=str, default="2025-08-09",
                     help="Cutoff date in YYYY-MM-DD. Default=today UTC.")
-    ap.add_argument("--abs_n", type=int, default=50, help="Number of abstracts to collect.")
-    ap.add_argument("--ft_n", type=int, default=5, help="Number of full-texts to collect.")
+    ap.add_argument("--abs_n", type=int, default=10, help="Number of abstracts to collect.")
+    ap.add_argument("--ft_n", type=int, default=0, help="Number of full-texts to collect.")
     ap.add_argument("--lookback_days", type=int, default=1000)
     ap.add_argument("--window_days", type=int, default=30)
     ap.add_argument("--query", type=str, default="cat:cs.AI OR cat:cs.LG")
@@ -114,54 +114,46 @@ def main():
     cutoff = cutoff_to_eod_utc(args.cutoff)
     print(f"[INFO] Cutoff (UTC): {cutoff.isoformat()} | Query: {args.query}")
 
-    # test = ['2507.10864', '2507.15867', '2507.10861', '2507.10854', '2507.10850', '2507.10846', '2507.10843', '2507.10835', '2507.10834', '2507.10831']
-    # for id in test:
-    #     article = s2_get_by_arxiv(id)   #we have to take the version away
-    #     print(article)
+    test = ['2507.10864', '2507.15867', '2507.10861', '2507.10854', '2507.10850', '2507.10846', '2507.10843', '2507.10835', '2507.10834', '2507.10831']
+    for id in test:
+        article = s2_get_by_arxiv(id)   #we have to take the version away
+        print(article)
 
     # Abstracts
-    t0 = time.time()
+    # t0 = time.time()
 
-    total_wanted = args.abs_n + args.ft_n
-    results = fetch_before_date(
-        args.query, cutoff, want=total_wanted,
-        lookback_days=args.lookback_days, window_days=args.window_days
-    )
-
-    used_ids = set()
-    abstracts = results[:args.abs_n]
-    ft_candidates = results[args.abs_n:]
-    fulltexts = [r for r in ft_candidates if r.get_short_id() not in used_ids][:args.ft_n]
-
-    rows_abs = build_dataset(abstracts, mode="abstract", len_range=(100, 200), used_ids=used_ids)
-    write_parquet(rows_abs, DATA_DIR / "abstract_pairs.parquet")
-
-    rows_ft = build_dataset(fulltexts, mode="fulltext", len_range=(200, 300), used_ids=used_ids)
-    write_parquet(rows_ft, DATA_DIR / "fulltext_pairs.parquet")
-
-    t1 = time.time()
-    print(f"[INFO] Retrieved {len(abstracts)} abstracts in {t1 - t0:.2f} seconds")
-
-    # Coverage summaries
-    abs_pct = summarize_sources(rows_abs)
-    ft_pct  = summarize_sources(rows_ft)
-    total_rows = rows_abs + rows_ft
-    overall_pct = summarize_sources(total_rows)
-
-    def fmt(p): return " | ".join(f"{k}: {p[k]:5.1f}%" for k in ("sci", "s2", "gpt"))
-    print("\n=== Source coverage (percent) ===")
-    print(f"Abstracts ({len(rows_abs)}): {fmt(abs_pct)}")
-    print(f"Full-texts ({len(rows_ft)}): {fmt(ft_pct)}")
-    print(f"Overall   ({len(total_rows)}): {fmt(overall_pct)}")
-
-
-    ### Testing full text
+    # total_wanted = args.abs_n + args.ft_n
     # results = fetch_before_date(
-    #     args.query, cutoff, want=30,
+    #     args.query, cutoff, want=total_wanted,
     #     lookback_days=args.lookback_days, window_days=args.window_days
     # )
+
     # used_ids = set()
-    # rows_ft = build_dataset(results, mode="fulltext", len_range=(200, 300), used_ids=used_ids)
+    # abstracts = results[:args.abs_n]
+    # ft_candidates = results[args.abs_n:]
+    # fulltexts = [r for r in ft_candidates if r.get_short_id() not in used_ids][:args.ft_n]
+
+    # rows_abs = build_dataset(abstracts, mode="abstract", len_range=(100, 200), used_ids=used_ids)
+    # write_parquet(rows_abs, DATA_DIR / "abstract_pairs.parquet")
+
+    # rows_ft = build_dataset(fulltexts, mode="fulltext", len_range=(200, 300), used_ids=used_ids)
+    # write_parquet(rows_ft, DATA_DIR / "fulltext_pairs.parquet")
+
+    # t1 = time.time()
+    # print(f"[INFO] Retrieved {len(abstracts)} abstracts and {len(fulltexts)} fulltexts in {t1 - t0:.2f} seconds")
+
+    # # Coverage summaries
+    # abs_pct = summarize_sources(rows_abs)
+    # ft_pct  = summarize_sources(rows_ft)
+    # total_rows = rows_abs + rows_ft
+    # overall_pct = summarize_sources(total_rows)
+
+    # def fmt(p): return " | ".join(f"{k}: {p[k]:5.1f}%" for k in ("sci", "s2", "gpt"))
+    # print("\n=== Source coverage (percent) ===")
+    # print(f"Abstracts ({len(rows_abs)}): {fmt(abs_pct)}")
+    # print(f"Full-texts ({len(rows_ft)}): {fmt(ft_pct)}")
+    # print(f"Overall   ({len(total_rows)}): {fmt(overall_pct)}")
+
 
 if __name__ == "__main__":
     main()
