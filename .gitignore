@@ -7,10 +7,6 @@ __pycache__/
 dist/
 build/
 
-# --- Jupyter / Notebooks ---
-.ipynb_checkpoints/
-*.ipynb
-
 # --- Conda / venv ---
 .env
 .venv/
